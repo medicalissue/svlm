@@ -1,0 +1,11 @@
+name: COCO_CHAIR
+split: val
+image_column: image
+text_column: caption
+reference_column: caption
+limit: null
+shuffle: false
+seed: 42
+data_path: /path/to/your/coco  # COCO 데이터셋 경로로 변경
+image_root: val2017
+annotation_path: annotations/captions_val2017.json

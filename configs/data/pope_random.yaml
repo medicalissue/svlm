@@ -8,5 +8,6 @@ shuffle: false
 seed: 42
 hf_repo: lmms-lab/POPE
 hf_subset: default
+category_filter: random
 data_path: /data/coco
 image_root: val2017

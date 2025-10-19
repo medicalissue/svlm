@@ -269,6 +269,13 @@ def _load_hf_dataset_samples(data_config: DataConfig) -> List[GenerationSample]:
         **load_kwargs,
     )
 
+    if data_config.category_filter:
+        if "category" in dataset.column_names:
+            dataset = dataset.filter(lambda x: x.get("category") == data_config.category_filter)
+            logger.info("Filtered dataset to category '%s': %d samples", data_config.category_filter, len(dataset))
+        else:
+            logger.warning("category_filter specified but 'category' column not found in dataset")
+
     if data_config.shuffle:
         dataset = dataset.shuffle(seed=data_config.seed)
     if data_config.limit is not None:

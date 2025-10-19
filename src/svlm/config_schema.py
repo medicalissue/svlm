@@ -20,7 +20,7 @@ class ModelConfig:
 @dataclass
 class DataConfig:
     name: str = "POPE"
-    split: str = "adversarial"
+    split: str = "test"
     image_column: str = "image"
     text_column: str = "question"
     reference_column: Optional[str] = "answer"
@@ -29,6 +29,7 @@ class DataConfig:
     seed: int = 42
     hf_repo: Optional[str] = None
     hf_subset: Optional[str] = None
+    category_filter: Optional[str] = None
     data_path: Optional[str] = None
     image_root: Optional[str] = None
     annotation_path: Optional[str] = None

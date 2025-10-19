@@ -153,6 +153,38 @@ def main(cfg: DictConfig) -> None:
     config = parse_config(cfg)
     log.info("Loaded configuration for run '%s'", config.run.run_name)
 
+    # Initialize wandb if available
+    wandb_run = None
+    try:
+        import wandb
+        if wandb.run is not None:
+            # Already initialized by sweep agent
+            wandb_run = wandb.run
+            log.info("Using existing W&B run: %s", wandb_run.name)
+        else:
+            # Initialize manually if not in sweep
+            wandb_run = wandb.init(
+                project="svlm-calibration",
+                name=config.run.run_name,
+                config={
+                    "lambda": config.method.lambda_,
+                    "beta": config.method.beta,
+                    "alpha": config.method.alpha,
+                    "ven_eps": config.method.ven_eps,
+                    "use_erw": config.method.use_erw,
+                    "use_pva": config.method.use_pva,
+                    "use_ven": config.method.use_ven,
+                    "temperature": config.decoding.temperature,
+                    "top_p": config.decoding.top_p,
+                    "data": config.data.name,
+                    "model": config.model.name,
+                },
+                mode="online" if config.run.run_name != "baseline" else "disabled"
+            )
+            log.info("Initialized W&B run: %s", wandb_run.name if wandb_run else "disabled")
+    except ImportError:
+        log.debug("wandb not installed, skipping W&B logging")
+
     if (
         config.model.gpu_id is not None
         and isinstance(config.model.device, str)
@@ -188,7 +220,27 @@ def main(cfg: DictConfig) -> None:
     metrics = evaluate_results(config.evaluation, results)
     if metrics:
         log.info("Evaluation metrics: %s", metrics)
+
+        # Log metrics to wandb
+        if wandb_run:
+            try:
+                import wandb
+                # Log all numeric metrics
+                wandb_metrics = {k: v for k, v in metrics.items() if isinstance(v, (int, float))}
+                wandb.log(wandb_metrics)
+                log.info("Logged metrics to W&B: %s", wandb_metrics)
+            except Exception as e:
+                log.warning("Failed to log to W&B: %s", e)
+
     save_metadata(config.run, config, results, metrics=metrics)
+
+    # Finish wandb run
+    if wandb_run:
+        try:
+            import wandb
+            wandb.finish()
+        except:
+            pass
 
 
 if __name__ == "__main__":

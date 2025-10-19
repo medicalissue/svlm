@@ -1,0 +1,39 @@
+program: runner.py
+method: grid
+
+metric:
+  name: pope_f1
+  goal: maximize
+
+parameters:
+  # Grid search over key hyperparameters
+  method.lambda_:
+    values: [0.3, 0.5, 0.7, 0.9]
+
+  method.beta:
+    values: [0.7, 0.8, 0.9]
+
+  method.alpha:
+    values: [0.4, 0.6, 0.8]
+
+  # Fixed parameters
+  data:
+    value: pope_adversarial
+
+  model:
+    value: qwen2_vl_2b
+
+  method.use_erw:
+    value: true
+
+  method.use_pva:
+    value: true
+
+  method.use_ven:
+    value: true
+
+  decoding.temperature:
+    value: 0.7
+
+  decoding.top_p:
+    value: 0.9

@@ -1,0 +1,42 @@
+program: runner.py
+method: random
+
+metric:
+  name: pope_accuracy
+  goal: maximize
+
+parameters:
+  # Random search - good for quick exploration
+  method.lambda_:
+    distribution: uniform
+    min: 0.2
+    max: 1.0
+
+  method.beta:
+    distribution: uniform
+    min: 0.6
+    max: 0.95
+
+  method.alpha:
+    distribution: uniform
+    min: 0.3
+    max: 0.8
+
+  # Fixed parameters
+  data:
+    value: pope
+
+  model:
+    value: qwen2_vl_2b
+
+  method.use_erw:
+    value: true
+
+  method.use_pva:
+    value: true
+
+  method.use_ven:
+    value: false
+
+# Number of runs
+count: 20

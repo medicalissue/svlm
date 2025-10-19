@@ -1,4 +1,4 @@
-name: RefCOCO+
+name: RefCOCO
 split: validation
 image_column: image
 text_column: text
@@ -6,7 +6,7 @@ reference_column: bbox
 limit: null
 shuffle: false
 seed: 42
-hf_repo: lmms-lab/RefCOCOplus
-hf_subset: refcoco+
+hf_repo: lmms-lab/RefCOCO
+hf_subset: refcoco-unc
 data_path: /data/coco
 image_root: train2017

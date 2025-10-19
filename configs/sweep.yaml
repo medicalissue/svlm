@@ -1,0 +1,55 @@
+program: runner.py
+method: bayes  # bayes, grid, or random
+metric:
+  name: pope_f1
+  goal: maximize
+
+parameters:
+  # Calibration hyperparameters
+  method.lambda_:
+    distribution: uniform
+    min: 0.05
+    max: 0.5
+
+  method.beta:
+    distribution: uniform
+    min: 0.8
+    max: 0.95
+
+  method.alpha:
+    distribution: uniform
+    min: 0.4
+    max: 0.7
+
+  method.ven_eps:
+    distribution: log_uniform_values
+    min: 1e-6
+    max: 1e-3
+
+  # Decoding parameters
+  decoding.temperature:
+    distribution: uniform
+    min: 0.3
+    max: 0.8
+
+  decoding.top_p:
+    distribution: uniform
+    min: 0.7
+    max: 0.95
+
+  # Fixed parameters (not searched)
+  data:
+    value: pope_adversarial
+
+  model:
+    value: qwen2_vl_2b
+
+  run.run_name:
+    value: sweep_run
+
+# Early termination
+early_terminate:
+  type: hyperband
+  min_iter: 3
+  eta: 2
+  s: 3
