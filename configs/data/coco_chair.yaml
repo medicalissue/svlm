@@ -1,10 +1,14 @@
 name: COCO_CHAIR
 subset: null
-split: validation
+split: test
 image_column: image
 text_column: caption
 reference_column: null
 limit: 32
 shuffle: true
 seed: 123
-data_path: null
+data_path: /data/coco
+image_root: val2017
+annotation_path: annotations/captions_val2017.json
+hf_repo: lmms-lab/POPE
+hf_subset: coco_chair

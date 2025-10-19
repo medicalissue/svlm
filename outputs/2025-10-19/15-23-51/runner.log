@@ -1,0 +1,36 @@
+[2025-10-19 15:23:51,353][__main__][INFO] - Loaded configuration for run 'baseline'
+[2025-10-19 15:23:51,353][__main__][INFO] - Overriding model device to cuda:0
+[2025-10-19 15:23:51,634][__main__][INFO] - Set torch CUDA device to 0
+[2025-10-19 15:23:51,635][__main__][INFO] - Loaded adapter via fallback path 'src.svlm.model_adapter'
+[2025-10-19 15:23:59,807][__main__][INFO] - Cross-attention blocks (30 total):
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=0, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=1, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=2, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=3, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=4, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=5, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=6, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=7, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=8, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=9, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=10, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=11, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=12, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=13, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=14, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=15, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=16, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=17, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,807][__main__][INFO] -   - layer=18, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=19, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=20, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=21, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=22, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=23, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=24, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=25, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=26, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=27, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=vision, type=vision_encoder, heads=None, hidden=1536, extra={'image_size': None, 'note': 'Vision encoder configuration'}
+[2025-10-19 15:23:59,808][__main__][INFO] -   - layer=multimodal, type=cross_attention, heads=None, extra={'note': 'Qwen2-VL multimodal fusion layers (approximate)'}
+[2025-10-19 15:23:59,947][src.svlm.pipeline][WARNING] - Cache directory '/data/coco' is not writable; falling back to default HuggingFace cache.

@@ -1,0 +1,237 @@
+[2025-10-19 14:47:14,456][__main__][INFO] - Loaded configuration for run 'baseline'
+[2025-10-19 14:47:14,456][__main__][INFO] - Overriding model device to cuda:0
+[2025-10-19 14:47:14,710][__main__][INFO] - Set torch CUDA device to 0
+[2025-10-19 14:47:14,710][__main__][INFO] - Loaded adapter via fallback path 'src.svlm.model_adapter'
+[2025-10-19 14:47:23,170][__main__][INFO] - Cross-attention blocks (30 total):
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=0, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=1, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=2, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=3, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=4, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=5, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=6, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=7, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=8, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=9, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=10, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=11, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=12, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=13, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=14, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=15, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=16, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,171][__main__][INFO] -   - layer=17, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=18, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=19, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=20, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=21, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=22, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=23, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=24, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=25, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=26, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=27, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=vision, type=vision_encoder, heads=None, hidden=1536, extra={'image_size': None, 'note': 'Vision encoder configuration'}
+[2025-10-19 14:47:23,172][__main__][INFO] -   - layer=multimodal, type=cross_attention, heads=None, extra={'note': 'Qwen2-VL multimodal fusion layers (approximate)'}
+[2025-10-19 14:47:23,372][src.svlm.pipeline][WARNING] - Cache directory '/data/coco' is not writable; falling back to default HuggingFace cache.
+[2025-10-19 14:47:30,362][__main__][INFO] - Prompt: Is there a snowboard in the image?
+[2025-10-19 14:47:30,363][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:31,258][__main__][INFO] - Prompt: Is there a backpack in the image?
+[2025-10-19 14:47:31,258][__main__][INFO] - Output: No
+[2025-10-19 14:47:32,015][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:47:32,015][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:32,909][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:47:32,909][__main__][INFO] - Output: No
+[2025-10-19 14:47:33,877][__main__][INFO] - Prompt: Is there a skis in the image?
+[2025-10-19 14:47:33,878][__main__][INFO] - Output: No
+[2025-10-19 14:47:34,793][__main__][INFO] - Prompt: Is there a dog in the image?
+[2025-10-19 14:47:34,794][__main__][INFO] - Output: No
+[2025-10-19 14:47:35,379][__main__][INFO] - Prompt: Is there a truck in the image?
+[2025-10-19 14:47:35,379][__main__][INFO] - Output: No
+[2025-10-19 14:47:35,873][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:47:35,873][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:36,364][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:47:36,364][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:36,987][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:47:36,987][__main__][INFO] - Output: No
+[2025-10-19 14:47:37,393][__main__][INFO] - Prompt: Is there an umbrella in the imange?
+[2025-10-19 14:47:37,393][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:37,978][__main__][INFO] - Prompt: Is there a handbag in the image?
+[2025-10-19 14:47:37,978][__main__][INFO] - Output: No
+[2025-10-19 14:47:39,302][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:47:39,302][__main__][INFO] - Output: No
+[2025-10-19 14:47:40,264][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:47:40,264][__main__][INFO] - Output: No
+[2025-10-19 14:47:41,013][__main__][INFO] - Prompt: Is there a bicycle in the image?
+[2025-10-19 14:47:41,014][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:41,953][__main__][INFO] - Prompt: Is there a motorcycle in the image?
+[2025-10-19 14:47:41,953][__main__][INFO] - Output: No
+[2025-10-19 14:47:42,841][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:47:42,841][__main__][INFO] - Output: No
+[2025-10-19 14:47:43,667][__main__][INFO] - Prompt: Is there a truck in the image?
+[2025-10-19 14:47:43,668][__main__][INFO] - Output: No
+[2025-10-19 14:47:44,377][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:47:44,377][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:45,293][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:47:45,293][__main__][INFO] - Output: No
+[2025-10-19 14:47:46,376][__main__][INFO] - Prompt: Is there a potted plant in the image?
+[2025-10-19 14:47:46,376][__main__][INFO] - Output: No
+[2025-10-19 14:47:47,551][__main__][INFO] - Prompt: Is there a vase in the image?
+[2025-10-19 14:47:47,551][__main__][INFO] - Output: No
+[2025-10-19 14:47:49,229][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:47:49,229][__main__][INFO] - Output: No
+[2025-10-19 14:47:50,091][__main__][INFO] - Prompt: Is there a truck in the image?
+[2025-10-19 14:47:50,091][__main__][INFO] - Output: No
+[2025-10-19 14:47:50,620][__main__][INFO] - Prompt: Is there a traffic light in the image?
+[2025-10-19 14:47:50,620][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:51,061][__main__][INFO] - Prompt: Is there a bus in the image?
+[2025-10-19 14:47:51,061][__main__][INFO] - Output: No
+[2025-10-19 14:47:51,541][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:47:51,541][__main__][INFO] - Output: No
+[2025-10-19 14:47:52,063][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:47:52,063][__main__][INFO] - Output: No
+[2025-10-19 14:47:52,504][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:47:52,504][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:52,991][__main__][INFO] - Prompt: Is there a truck in the image?
+[2025-10-19 14:47:52,991][__main__][INFO] - Output: No
+[2025-10-19 14:47:53,758][__main__][INFO] - Prompt: Is there a dog in the image?
+[2025-10-19 14:47:53,759][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:54,671][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:47:54,671][__main__][INFO] - Output: No
+[2025-10-19 14:47:55,517][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:47:55,517][__main__][INFO] - Output: Yes
+[2025-10-19 14:47:56,352][__main__][INFO] - Prompt: Is there a chair in the image?
+[2025-10-19 14:47:56,352][__main__][INFO] - Output: No
+[2025-10-19 14:47:57,187][__main__][INFO] - Prompt: Is there a bed in the image?
+[2025-10-19 14:47:57,187][__main__][INFO] - Output: No
+[2025-10-19 14:47:58,087][__main__][INFO] - Prompt: Is there a book in the image?
+[2025-10-19 14:47:58,087][__main__][INFO] - Output: No
+[2025-10-19 14:48:00,133][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:00,133][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:01,202][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:48:01,202][__main__][INFO] - Output: No
+[2025-10-19 14:48:02,112][__main__][INFO] - Prompt: Is there a spoon in the image?
+[2025-10-19 14:48:02,112][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:03,256][__main__][INFO] - Prompt: Is there a cup in the image?
+[2025-10-19 14:48:03,256][__main__][INFO] - Output: No
+[2025-10-19 14:48:04,330][__main__][INFO] - Prompt: Is there a fork in the image?
+[2025-10-19 14:48:04,330][__main__][INFO] - Output: No
+[2025-10-19 14:48:05,403][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:48:05,403][__main__][INFO] - Output: No
+[2025-10-19 14:48:06,394][__main__][INFO] - Prompt: Is there a tv in the image?
+[2025-10-19 14:48:06,394][__main__][INFO] - Output: No
+[2025-10-19 14:48:07,388][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:07,389][__main__][INFO] - Output: No
+[2025-10-19 14:48:08,298][__main__][INFO] - Prompt: Is there a toaster in the image?
+[2025-10-19 14:48:08,298][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:09,295][__main__][INFO] - Prompt: Is there a book in the image?
+[2025-10-19 14:48:09,295][__main__][INFO] - Output: No
+[2025-10-19 14:48:10,218][__main__][INFO] - Prompt: Is there a microwave in the image?
+[2025-10-19 14:48:10,218][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:11,287][__main__][INFO] - Prompt: Is there a bottle in the image?
+[2025-10-19 14:48:11,287][__main__][INFO] - Output: No
+[2025-10-19 14:48:12,049][__main__][INFO] - Prompt: Is there a backpack in the image?
+[2025-10-19 14:48:12,049][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:13,378][__main__][INFO] - Prompt: Is there a handbag in the image?
+[2025-10-19 14:48:13,379][__main__][INFO] - Output: No
+[2025-10-19 14:48:14,143][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:14,144][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:14,976][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:48:14,976][__main__][INFO] - Output: No
+[2025-10-19 14:48:15,879][__main__][INFO] - Prompt: Is there a skis in the image?
+[2025-10-19 14:48:15,879][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:16,710][__main__][INFO] - Prompt: Is there a snowboard in the image?
+[2025-10-19 14:48:16,711][__main__][INFO] - Output: No
+[2025-10-19 14:48:17,621][__main__][INFO] - Prompt: Is there a bird in the image?
+[2025-10-19 14:48:17,621][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:18,692][__main__][INFO] - Prompt: Is there a handbag in the image?
+[2025-10-19 14:48:18,692][__main__][INFO] - Output: No
+[2025-10-19 14:48:19,760][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:19,761][__main__][INFO] - Output: No
+[2025-10-19 14:48:20,747][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:48:20,747][__main__][INFO] - Output: No
+[2025-10-19 14:48:21,658][__main__][INFO] - Prompt: Is there a boat in the image?
+[2025-10-19 14:48:21,658][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:22,744][__main__][INFO] - Prompt: Is there a chair in the image?
+[2025-10-19 14:48:22,744][__main__][INFO] - Output: No
+[2025-10-19 14:48:23,441][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:23,441][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:24,345][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:48:24,345][__main__][INFO] - Output: No
+[2025-10-19 14:48:26,235][__main__][INFO] - Prompt: Is there an orange in the imange?
+[2025-10-19 14:48:26,235][__main__][INFO] - Output: No
+[2025-10-19 14:48:27,344][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:48:27,344][__main__][INFO] - Output: No
+[2025-10-19 14:48:28,239][__main__][INFO] - Prompt: Is there a bottle in the image?
+[2025-10-19 14:48:28,239][__main__][INFO] - Output: No
+[2025-10-19 14:48:29,158][__main__][INFO] - Prompt: Is there a cup in the image?
+[2025-10-19 14:48:29,158][__main__][INFO] - Output: No
+[2025-10-19 14:48:29,868][__main__][INFO] - Prompt: Is there a backpack in the image?
+[2025-10-19 14:48:29,868][__main__][INFO] - Output: No
+[2025-10-19 14:48:30,573][__main__][INFO] - Prompt: Is there a handbag in the image?
+[2025-10-19 14:48:30,573][__main__][INFO] - Output: No
+[2025-10-19 14:48:31,426][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:31,426][__main__][INFO] - Output: No
+[2025-10-19 14:48:32,358][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:48:32,358][__main__][INFO] - Output: No
+[2025-10-19 14:48:33,135][__main__][INFO] - Prompt: Is there a bus in the image?
+[2025-10-19 14:48:33,135][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:33,838][__main__][INFO] - Prompt: Is there a traffic light in the image?
+[2025-10-19 14:48:33,838][__main__][INFO] - Output: No
+[2025-10-19 14:48:34,752][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:34,752][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:35,745][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:48:35,745][__main__][INFO] - Output: No
+[2025-10-19 14:48:36,822][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:48:36,822][__main__][INFO] - Output: No
+[2025-10-19 14:48:37,984][__main__][INFO] - Prompt: Is there a cup in the image?
+[2025-10-19 14:48:37,984][__main__][INFO] - Output: No
+[2025-10-19 14:48:38,977][__main__][INFO] - Prompt: Is there a chair in the image?
+[2025-10-19 14:48:38,977][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:40,000][__main__][INFO] - Prompt: Is there a couch in the image?
+[2025-10-19 14:48:40,001][__main__][INFO] - Output: No
+[2025-10-19 14:48:41,053][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:41,053][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:41,742][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:48:41,742][__main__][INFO] - Output: No
+[2025-10-19 14:48:42,185][__main__][INFO] - Prompt: Is there a sandwich in the image?
+[2025-10-19 14:48:42,185][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:42,663][__main__][INFO] - Prompt: Is there a bowl in the image?
+[2025-10-19 14:48:42,663][__main__][INFO] - Output: No
+[2025-10-19 14:48:43,348][__main__][INFO] - Prompt: Is there a hot dog in the image?
+[2025-10-19 14:48:43,349][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:43,905][__main__][INFO] - Prompt: Is there a handbag in the image?
+[2025-10-19 14:48:43,905][__main__][INFO] - Output: No
+[2025-10-19 14:48:44,270][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:44,270][__main__][INFO] - Output: No
+[2025-10-19 14:48:44,841][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:48:44,841][__main__][INFO] - Output: No
+[2025-10-19 14:48:45,279][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:48:45,279][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:45,722][__main__][INFO] - Prompt: Is there a truck in the image?
+[2025-10-19 14:48:45,722][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:46,248][__main__][INFO] - Prompt: Is there a frisbee in the image?
+[2025-10-19 14:48:46,249][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:46,767][__main__][INFO] - Prompt: Is there a dog in the image?
+[2025-10-19 14:48:46,767][__main__][INFO] - Output: No
+[2025-10-19 14:48:47,759][__main__][INFO] - Prompt: Is there a knife in the image?
+[2025-10-19 14:48:47,760][__main__][INFO] - Output: No
+[2025-10-19 14:48:48,756][__main__][INFO] - Prompt: Is there a cup in the image?
+[2025-10-19 14:48:48,757][__main__][INFO] - Output: No
+[2025-10-19 14:48:49,671][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:49,671][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:51,992][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:48:51,992][__main__][INFO] - Output: No
+[2025-10-19 14:48:52,904][__main__][INFO] - Prompt: Is there a cake in the image?
+[2025-10-19 14:48:52,904][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:53,983][__main__][INFO] - Prompt: Is there a bottle in the image?
+[2025-10-19 14:48:53,983][__main__][INFO] - Output: No
+[2025-10-19 14:48:54,760][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:48:54,760][__main__][INFO] - Output: Yes
+[2025-10-19 14:48:55,607][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:48:55,607][__main__][INFO] - Output: No
+[2025-10-19 14:48:56,526][__main__][INFO] - Prompt: Is there a remote in the image?
+[2025-10-19 14:48:56,526][__main__][INFO] - Output: No
+[2025-10-19 14:48:57,439][__main__][INFO] - Prompt: Is there a tv in the image?
+[2025-10-19 14:48:57,439][__main__][INFO] - Output: No
+[2025-10-19 14:48:57,440][__main__][INFO] - Evaluation metrics: {'pope_accuracy': 0.79, 'pope_yes_rate': 0.33, 'pope_f1': 0.7469879518072288, 'chair_i': 0.0, 'chair_s': 0.0}

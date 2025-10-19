@@ -1,0 +1,5 @@
+[2025-10-19 13:48:30,909][__main__][INFO] - Loaded configuration for run 'baseline'
+[2025-10-19 13:48:30,909][__main__][INFO] - Overriding model device to cuda:0
+[2025-10-19 13:48:31,162][__main__][INFO] - Set torch CUDA device to 0
+[2025-10-19 13:48:31,162][__main__][INFO] - Resolved adapter 'svlm.model_adapter.DummyAdapter' from model name hint 'qwen'
+[2025-10-19 13:48:31,163][__main__][INFO] - Loaded adapter via fallback path 'src.svlm.model_adapter'

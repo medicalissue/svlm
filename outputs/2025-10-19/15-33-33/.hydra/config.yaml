@@ -1,0 +1,57 @@
+model:
+  name: Qwen/Qwen2-VL-2B-Instruct
+  revision: null
+  dtype: bfloat16
+  device: cuda
+  attn_implementation: null
+  max_sequence_length: 4096
+  adapter_target: svlm.model_adapter.Qwen2VLAdapter
+  adapter_kwargs:
+    model_name: Qwen/Qwen2-VL-2B-Instruct
+    torch_dtype: bfloat16
+    attn_implementation: null
+  gpu_id: 0
+data:
+  name: POPE
+  subset: adversarial
+  split: test
+  image_column: image
+  text_column: question
+  reference_column: answer
+  limit: 100
+  shuffle: false
+  seed: 42
+  data_path: /data/coco
+  image_root: val2017
+  annotation_path: annotations/captions_val2017.json
+  hf_repo: lmms-lab/POPE
+  hf_subset: adversarial
+  hf_revision: adversarial
+  hf_categories: adversarial
+method:
+  use_erw: true
+  use_pva: true
+  use_ven: true
+  lambda_: 0.3
+  beta: 0.9
+  alpha: 0.6
+  ven_eps: 1.0e-05
+decoding:
+  max_new_tokens: 64
+  temperature: 0.7
+  top_p: 0.9
+  top_k: null
+  repetition_penalty: 1.0
+  stop_words: []
+run:
+  run_name: baseline
+  output_dir: outputs/baseline
+  metadata_filename: metadata.json
+  save_generations: true
+  resume_from: null
+  seed: 42
+evaluation:
+  pope: true
+  coco_chair: true
+  cococider: false
+  refcoco_plus: false

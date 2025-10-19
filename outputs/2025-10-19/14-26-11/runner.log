@@ -1,0 +1,69 @@
+[2025-10-19 14:26:11,097][__main__][INFO] - Loaded configuration for run 'baseline'
+[2025-10-19 14:26:11,097][__main__][INFO] - Overriding model device to cuda:0
+[2025-10-19 14:26:11,363][__main__][INFO] - Set torch CUDA device to 0
+[2025-10-19 14:26:11,363][__main__][INFO] - Loaded adapter via fallback path 'src.svlm.model_adapter'
+[2025-10-19 14:26:19,409][__main__][INFO] - Cross-attention blocks (30 total):
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=0, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=1, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=2, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=3, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=4, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=5, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=6, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=7, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=8, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=9, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=10, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=11, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=12, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=13, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=14, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=15, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=16, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=17, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=18, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=19, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=20, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=21, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=22, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=23, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=24, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=25, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=26, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=27, type=self_attention, heads=12, hidden=1536, extra={'note': 'Transformer text block'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=vision, type=vision_encoder, heads=None, hidden=1536, extra={'image_size': None, 'note': 'Vision encoder configuration'}
+[2025-10-19 14:26:19,410][__main__][INFO] -   - layer=multimodal, type=cross_attention, heads=None, extra={'note': 'Qwen2-VL multimodal fusion layers (approximate)'}
+[2025-10-19 14:26:19,539][src.svlm.pipeline][WARNING] - Cache directory '/data/coco' is not writable; falling back to default HuggingFace cache.
+[2025-10-19 14:26:24,988][__main__][INFO] - Prompt: Is there a snowboard in the image?
+[2025-10-19 14:26:24,989][__main__][INFO] - Output: Yes, there is a snowboard in the image.
+[2025-10-19 14:26:25,897][__main__][INFO] - Prompt: Is there a backpack in the image?
+[2025-10-19 14:26:25,898][__main__][INFO] - Output: There is no existence of a backpack in the image information.
+[2025-10-19 14:26:26,664][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:26:26,665][__main__][INFO] - Output: Yes, there is a person in the image.
+[2025-10-19 14:26:27,619][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:26:27,619][__main__][INFO] - Output: There is no existence of a car in the given image information.
+[2025-10-19 14:26:28,578][__main__][INFO] - Prompt: Is there a skis in the image?
+[2025-10-19 14:26:28,579][__main__][INFO] - Output: There is no existence of any skis in the image description.
+[2025-10-19 14:26:29,394][__main__][INFO] - Prompt: Is there a dog in the image?
+[2025-10-19 14:26:29,394][__main__][INFO] - Output: There is no existence of a dog in the image.
+[2025-10-19 14:26:29,985][__main__][INFO] - Prompt: Is there a truck in the image?
+[2025-10-19 14:26:29,985][__main__][INFO] - Output: There is no existence of a truck in the image description.
+[2025-10-19 14:26:30,570][__main__][INFO] - Prompt: Is there a car in the image?
+[2025-10-19 14:26:30,571][__main__][INFO] - Output: There is no existence of a car in the image description.
+[2025-10-19 14:26:31,024][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:26:31,024][__main__][INFO] - Output: Yes, there are people in the image.
+[2025-10-19 14:26:31,653][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:26:31,653][__main__][INFO] - Output: There is no existence of a dining table in the image description.
+[2025-10-19 14:26:32,151][__main__][INFO] - Prompt: Is there an umbrella in the imange?
+[2025-10-19 14:26:32,151][__main__][INFO] - Output: Yes, there is an umbrella in the image.
+[2025-10-19 14:26:32,781][__main__][INFO] - Prompt: Is there a handbag in the image?
+[2025-10-19 14:26:32,781][__main__][INFO] - Output: There is no existence of a handbag in the image description.
+[2025-10-19 14:26:33,746][__main__][INFO] - Prompt: Is there a person in the image?
+[2025-10-19 14:26:33,746][__main__][INFO] - Output: There is no existence of a person in the image information provided.
+[2025-10-19 14:26:34,651][__main__][INFO] - Prompt: Is there a dining table in the image?
+[2025-10-19 14:26:34,651][__main__][INFO] - Output: There is no existence of a dining table in the image.
+[2025-10-19 14:26:35,406][__main__][INFO] - Prompt: Is there a bicycle in the image?
+[2025-10-19 14:26:35,406][__main__][INFO] - Output: Yes, there is a bicycle in the image.
+[2025-10-19 14:26:36,159][__main__][INFO] - Prompt: Is there a motorcycle in the image?
+[2025-10-19 14:26:36,159][__main__][INFO] - Output: No, there is no motorcycle in the image.
+[2025-10-19 14:26:36,159][__main__][INFO] - Evaluation metrics: {'pope_accuracy': 0.0, 'pope_yes_rate': 0.3125, 'pope_f1': 0.0, 'chair_i': 0.0, 'chair_s': 0.0}

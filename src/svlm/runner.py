@@ -22,15 +22,17 @@ from .pipeline import InferencePipeline, GenerationResult, collect_samples, save
 
 log = logging.getLogger(__name__)
 
-DEFAULT_ADAPTER_PATH = "svlm.model_adapter.DummyAdapter"
+DEFAULT_ADAPTER_PATH = "svlm.model_adapter.Qwen2VLAdapter"
 ADAPTER_ALIASES = {
     "default": DEFAULT_ADAPTER_PATH,
-    "dummy": DEFAULT_ADAPTER_PATH,
-    "baseline": DEFAULT_ADAPTER_PATH,
+    "dummy": "svlm.model_adapter.DummyAdapter",
+    "baseline": "svlm.model_adapter.DummyAdapter",
+    "qwen2": "svlm.model_adapter.Qwen2VLAdapter",
+    "minicpm": "svlm.model_adapter.MiniCPMVAdapter",
 }
 MODEL_NAME_HINTS = [
-    ("qwen", DEFAULT_ADAPTER_PATH),
-    ("minicpm", DEFAULT_ADAPTER_PATH),
+    ("qwen", "svlm.model_adapter.Qwen2VLAdapter"),
+    ("minicpm", "svlm.model_adapter.MiniCPMVAdapter"),
 ]
 
 
@@ -60,10 +62,18 @@ def parse_config(cfg: DictConfig) -> ExperimentConfig:
 
 def load_adapter(model_config: ModelConfig):
     target_path = resolve_adapter_target(model_config)
-    module_name, class_name = target_path.rsplit(".", 1)
-    module = importlib.import_module(module_name)
-    adapter_cls = getattr(module, class_name)
-    return adapter_cls(**model_config.adapter_kwargs)
+    adapter_cls = import_class(target_path)
+    kwargs = dict(model_config.adapter_kwargs or {})
+    kwargs.setdefault("model_name", model_config.name)
+    if "device" not in kwargs and model_config.device is not None:
+        kwargs["device"] = model_config.device
+    if "torch_dtype" not in kwargs and model_config.dtype is not None:
+        kwargs["torch_dtype"] = model_config.dtype
+    if "revision" not in kwargs and model_config.revision is not None:
+        kwargs["revision"] = model_config.revision
+    if "attn_implementation" not in kwargs and model_config.attn_implementation is not None:
+        kwargs["attn_implementation"] = model_config.attn_implementation
+    return adapter_cls(**kwargs)
 
 
 def resolve_adapter_target(model_config: ModelConfig) -> str:
@@ -86,7 +96,58 @@ def resolve_adapter_target(model_config: ModelConfig) -> str:
     return target
 
 
-@hydra.main(version_base="1.3", config_path="../configs", config_name="config")
+def import_class(path: str):
+    module_name, class_name = path.rsplit(".", 1)
+    try:
+        module = importlib.import_module(module_name)
+    except ModuleNotFoundError as exc:
+        if not module_name.startswith("src."):
+            fallback = f"src.{module_name}"
+            try:
+                module = importlib.import_module(fallback)
+                log.info("Loaded adapter via fallback path '%s'", fallback)
+            except ModuleNotFoundError:
+                raise exc
+        else:
+            raise exc
+    return getattr(module, class_name)
+
+
+def log_attention_structure(adapter: Any) -> None:
+    describe_fn = getattr(adapter, "describe_attention", None)
+    if not callable(describe_fn):
+        log.debug(
+            "Adapter %s does not implement describe_attention; skipping cross-attention summary.",
+            adapter.__class__.__name__,
+        )
+        return
+    try:
+        blocks = describe_fn()
+    except Exception as exc:  # pragma: no cover - adapter-defined behavior
+        log.warning("Failed to retrieve cross-attention structure: %s", exc)
+        return
+    if not blocks:
+        log.info("Adapter %s reported no cross-attention blocks.", adapter.__class__.__name__)
+        return
+
+    log.info("Cross-attention blocks (%d total):", len(blocks))
+    for block in blocks:
+        layer = block.get("layer", "?")
+        block_type = block.get("type", "cross_attention")
+        parts = [f"layer={layer}", f"type={block_type}"]
+        if "num_heads" in block:
+            parts.append(f"heads={block['num_heads']}")
+        if "num_visual_tokens" in block:
+            parts.append(f"visual_tokens={block['num_visual_tokens']}")
+        if "hidden_size" in block:
+            parts.append(f"hidden={block['hidden_size']}")
+        extras = {k: v for k, v in block.items() if k not in {"layer", "type", "num_heads", "num_visual_tokens", "hidden_size"}}
+        if extras:
+            parts.append(f"extra={extras}")
+        log.info("  - %s", ", ".join(str(p) for p in parts))
+
+
+@hydra.main(version_base="1.3", config_path="../../configs", config_name="config")
 def main(cfg: DictConfig) -> None:
     logging.basicConfig(level=logging.INFO)
     config = parse_config(cfg)
@@ -112,6 +173,7 @@ def main(cfg: DictConfig) -> None:
             log.warning("Failed to set CUDA device: %s", exc)
 
     adapter = load_adapter(config.model)
+    log_attention_structure(adapter)
     pipeline = InferencePipeline(adapter=adapter, config=config)
 
     samples = collect_samples(config.data)

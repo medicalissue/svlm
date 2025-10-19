@@ -1,0 +1,6 @@
+[2025-10-19 13:50:52,424][__main__][INFO] - Loaded configuration for run 'baseline'
+[2025-10-19 13:50:52,424][__main__][INFO] - Overriding model device to cuda:0
+[2025-10-19 13:50:52,678][__main__][INFO] - Set torch CUDA device to 0
+[2025-10-19 13:50:52,678][__main__][INFO] - Resolved adapter 'svlm.model_adapter.DummyAdapter' from model name hint 'qwen'
+[2025-10-19 13:50:52,678][__main__][INFO] - Loaded adapter via fallback path 'src.svlm.model_adapter'
+[2025-10-19 13:50:53,188][src.svlm.pipeline][WARNING] - Cache directory '/data/coco' is not writable; falling back to default HuggingFace cache.

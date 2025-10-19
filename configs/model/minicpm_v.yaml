@@ -4,9 +4,9 @@ dtype: float16
 device: cuda
 attn_implementation: null
 max_sequence_length: 2048
-adapter_target: auto
+adapter_target: svlm.model_adapter.MiniCPMVAdapter
 adapter_kwargs:
-  vocab_size: 32000
-  num_heads: 6
-  num_visual_tokens: 48
-gpu_id: null
+  model_name: open-mmlab/MiniCPM-V
+  torch_dtype: float16
+  attn_implementation: null
+gpu_id: 0

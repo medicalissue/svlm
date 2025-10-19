@@ -4,9 +4,9 @@ dtype: bfloat16
 device: cuda
 attn_implementation: null
 max_sequence_length: 4096
-adapter_target: auto
+adapter_target: svlm.model_adapter.Qwen2VLAdapter
 adapter_kwargs:
-  vocab_size: 65024
-  num_heads: 8
-  num_visual_tokens: 64
-gpu_id: null
+  model_name: Qwen/Qwen2-VL-2B-Instruct
+  torch_dtype: bfloat16
+  attn_implementation: null
+gpu_id: 0

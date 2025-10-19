@@ -21,7 +21,7 @@ class ModelConfig:
 class DataConfig:
     name: str = "POPE"
     subset: Optional[str] = None
-    split: str = "validation"
+    split: str = "test"
     image_column: str = "image"
     text_column: str = "question"
     reference_column: Optional[str] = "answer"
@@ -29,6 +29,12 @@ class DataConfig:
     shuffle: bool = False
     seed: int = 42
     data_path: Optional[str] = None
+    image_root: Optional[str] = None
+    annotation_path: Optional[str] = None
+    hf_repo: Optional[str] = None
+    hf_subset: Optional[str] = None
+    hf_revision: Optional[str] = None
+    hf_categories: Optional[List[str]] = None
 
 
 @dataclass
