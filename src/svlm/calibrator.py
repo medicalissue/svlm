@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import torch
 
@@ -37,9 +37,11 @@ class LogitCalibrator:
         if self.lambda_ < 0.0:
             raise ValueError("lambda must be non-negative.")
         self._pva_state: Optional[torch.Tensor] = None
+        self._debug_info: Optional[Dict[str, Optional[torch.Tensor]]] = None
 
     def reset(self) -> None:
         self._pva_state = None
+        self._debug_info = None
 
     def _prepare(self, attn: AttentionProjections) -> AttentionProjections:
         attn.validate()
@@ -57,7 +59,12 @@ class LogitCalibrator:
             attn: Attention projections for current step.
         """
         attn = self._prepare(attn)
-        signal = self._compute_signal(attn)
+        signal, debug = self._compute_signal(attn)
+        if debug is not None:
+            self._debug_info = {
+                key: value.detach().to("cpu") if value is not None else None
+                for key, value in debug.items()
+            }
         if signal is None:
             return logits
         if token_ids is None:
@@ -72,11 +79,34 @@ class LogitCalibrator:
         adjusted[vocab_indices] = logits[vocab_indices] + self.lambda_ * deltas
         return adjusted
 
-    def _compute_signal(self, attn: AttentionProjections) -> Optional[torch.Tensor]:
-        if not (self.use_erw or self.use_pva or self.use_ven):
+    def get_last_signal_summary(self) -> Optional[Dict[str, Optional[Dict[str, float]]]]:
+        if self._debug_info is None:
             return None
+        summary: Dict[str, Optional[Dict[str, float]]] = {}
+        for key, tensor in self._debug_info.items():
+            if tensor is None:
+                summary[key] = None
+                continue
+            if tensor.numel() == 0:
+                summary[key] = {"mean": 0.0, "min": 0.0, "max": 0.0}
+                continue
+            data = tensor.detach().float()
+            summary[key] = {
+                "mean": float(data.mean().item()),
+                "min": float(data.min().item()),
+                "max": float(data.max().item()),
+            }
+        return summary
+
+    def _compute_signal(
+        self,
+        attn: AttentionProjections,
+    ) -> Tuple[Optional[torch.Tensor], Optional[Dict[str, Optional[torch.Tensor]]]]:
+        if not (self.use_erw or self.use_pva or self.use_ven):
+            return None, None
 
         grounding = compute_visual_grounding(attn.cross_modal)
+        debug: Dict[str, Optional[torch.Tensor]] = {"erw": grounding}
 
         pva_signal = None
         if self.use_pva:
@@ -84,6 +114,7 @@ class LogitCalibrator:
                 self._pva_state = None
             self._pva_state = compute_visual_persistence(grounding, self._pva_state, beta=self.beta)
             pva_signal = self._pva_state
+        debug["pva"] = pva_signal
 
         ven_signal = None
         if self.use_ven:
@@ -91,14 +122,20 @@ class LogitCalibrator:
                 raise ValueError("VEN requires self-attention projections.")
             language = compute_language_evidence(attn.self_attn)
             ven_signal = compute_visual_ratio(grounding, language, eps=self.ven_eps)
+        debug["ven"] = ven_signal
 
         if self.use_pva and self.use_ven:
-            return self.alpha * pva_signal + (1.0 - self.alpha) * ven_signal
+            combined = self.alpha * pva_signal + (1.0 - self.alpha) * ven_signal
+            debug["combined"] = combined
+            return combined, debug
         if self.use_pva:
-            return pva_signal
+            debug["combined"] = pva_signal
+            return pva_signal, debug
         if self.use_ven:
-            return ven_signal
-        return grounding
+            debug["combined"] = ven_signal
+            return ven_signal, debug
+        debug["combined"] = grounding
+        return grounding, debug
 
     def _map_signal_to_vocab(
         self,

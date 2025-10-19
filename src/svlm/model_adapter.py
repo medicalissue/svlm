@@ -285,7 +285,7 @@ class HuggingFaceVLAdapter(VisionLanguageAdapter):
             )
 
         logits = outputs.logits[0, -1, :]
-        attention = self._build_attention(outputs)
+        attention = self._build_attention(outputs, state)
         return StepOutput(
             logits=logits,
             attention=attention,
@@ -385,13 +385,12 @@ class HuggingFaceVLAdapter(VisionLanguageAdapter):
                 return tokens[0]
         return None
 
-    def _build_attention(self, outputs) -> AttentionProjections:
+    def _build_attention(self, outputs, state: AdapterState) -> AttentionProjections:
         cross_attn = getattr(outputs, "cross_attentions", None)
         self_attn = getattr(outputs, "attentions", None)
 
         cross_tensor = None
         if cross_attn:
-            # take last layer cross attention for batch index 0
             last_cross = cross_attn[-1][0]  # (num_heads, query_len, kv_len)
             cross_tensor = last_cross.permute(0, 2, 1).contiguous()
 
@@ -399,6 +398,19 @@ class HuggingFaceVLAdapter(VisionLanguageAdapter):
         if self_attn:
             last_self = self_attn[-1][0]  # (num_heads, query_len, seq_len)
             self_tensor = last_self
+
+        if cross_tensor is None and self_tensor is not None and state is not None:
+            visual_mask = self._extract_visual_token_mask(state)
+            if visual_mask is not None and visual_mask.any():
+                visual_indices = torch.nonzero(visual_mask, as_tuple=False).squeeze(-1)
+                text_indices = torch.nonzero(~visual_mask, as_tuple=False).squeeze(-1)
+                if visual_indices.numel() > 0 and text_indices.numel() > 0:
+                    cross_tensor = (
+                        self_tensor[:, text_indices, :][:, :, visual_indices]
+                        .contiguous()
+                        .permute(0, 2, 1)
+                        .contiguous()
+                    )
 
         if cross_tensor is None:
             cross_tensor = torch.zeros(
@@ -415,6 +427,85 @@ class HuggingFaceVLAdapter(VisionLanguageAdapter):
             cross_modal=cross_tensor,
             self_attn=self_tensor,
         )
+
+    def _extract_visual_token_mask(self, state: AdapterState) -> Optional[torch.Tensor]:
+        input_ids = state.input_ids
+        if input_ids is None:
+            return None
+        if input_ids.dim() == 1:
+            seq = input_ids
+        else:
+            seq = input_ids[0]
+        seq_len = seq.shape[0]
+        mask = torch.zeros(seq_len, dtype=torch.bool, device=seq.device)
+
+        index = state.image_token_index
+        try:
+            if isinstance(index, torch.Tensor):
+                tensor_idx = index.to(device=seq.device)
+                mask |= self._mask_from_tensor_indices(tensor_idx, seq_len, seq.device)
+            elif isinstance(index, (list, tuple)):
+                tensor_idx = torch.tensor(index, device=seq.device)
+                mask |= self._mask_from_tensor_indices(tensor_idx, seq_len, seq.device)
+            elif isinstance(index, dict):
+                collected: List[int] = []
+                for key in ("image_token_start", "image_token_end", "image_tokens", "grid_thw"):
+                    value = index.get(key)
+                    if value is None:
+                        continue
+                    if isinstance(value, torch.Tensor):
+                        mask |= self._mask_from_tensor_indices(value.to(device=seq.device), seq_len, seq.device)
+                    elif isinstance(value, (list, tuple)):
+                        collected.extend(int(v) for v in value)
+                if collected:
+                    tensor_idx = torch.tensor(collected, device=seq.device)
+                    mask |= self._mask_from_tensor_indices(tensor_idx, seq_len, seq.device)
+        except Exception:
+            mask.zero_()
+
+        if not mask.any():
+            config = getattr(self.model, "config", None)
+            if config is not None:
+                vision_start = getattr(config, "vision_start_token_id", None)
+                vision_end = getattr(config, "vision_end_token_id", None)
+                image_token_id = getattr(config, "image_token_id", None)
+
+                inside = False
+                if vision_start is not None and vision_end is not None:
+                    for idx, token in enumerate(seq.tolist()):
+                        if token == vision_start:
+                            inside = True
+                            continue
+                        if token == vision_end:
+                            inside = False
+                            continue
+                        if inside:
+                            mask[idx] = True
+                if image_token_id is not None:
+                    mask |= seq == image_token_id
+
+        return mask
+
+    @staticmethod
+    def _mask_from_tensor_indices(
+        tensor_idx: torch.Tensor, seq_len: int, device: torch.device
+    ) -> torch.Tensor:
+        tensor_idx = tensor_idx.to(torch.long)
+        mask = torch.zeros(seq_len, dtype=torch.bool, device=device)
+        if tensor_idx.numel() == 0:
+            return mask
+        if tensor_idx.dim() == 2 and tensor_idx.shape[-1] == 2:
+            for start, end in tensor_idx.tolist():
+                start = max(0, int(start))
+                end = min(seq_len, int(end))
+                if start < end:
+                    mask[start:end] = True
+        else:
+            flat = tensor_idx.view(-1)
+            flat = flat[(flat >= 0) & (flat < seq_len)]
+            if flat.numel() > 0:
+                mask.scatter_(0, flat.unique(), True)
+        return mask
 
 
 class Qwen2VLAdapter(HuggingFaceVLAdapter):

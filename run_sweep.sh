@@ -42,22 +42,23 @@ echo "Creating sweep with config: $CONFIG"
 SWEEP_ID=$(python -c "
 import yaml
 import wandb
+import sys
 
 with open('$CONFIG') as f:
     config = yaml.safe_load(f)
-config['program'] = 'src/svlm/runner.py'
+config['program'] = 'sweep_train.py'
 
 sweep_id = wandb.sweep(config, project='svlm-calibration')
-print(sweep_id)
-")
+# Only print the sweep ID, nothing else
+sys.stdout.write(sweep_id)
+" 2>/dev/null | tail -n 1)
 
 echo "Sweep created: $SWEEP_ID"
-echo "View at: https://wandb.ai/YOUR_USERNAME/svlm-calibration/sweeps/$SWEEP_ID"
+echo "View at: https://wandb.ai/medicalissues/svlm-calibration/sweeps/$SWEEP_ID"
 echo ""
 echo "Starting agent with $COUNT runs..."
 echo "Press Ctrl+C to stop early"
 echo ""
 
 # Run agent
-cd src/svlm
 wandb agent --count $COUNT $SWEEP_ID

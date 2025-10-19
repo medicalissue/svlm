@@ -1,4 +1,6 @@
-program: runner.py
+program: sweep_train.py
+project: svlm-calibration
+entity: medicalissues
 method: bayes  # bayes, grid, or random
 metric:
   name: pope_f1

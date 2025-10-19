@@ -1,4 +1,6 @@
-program: runner.py
+program: sweep_train.py
+project: svlm-calibration
+entity: medicalissues
 method: random
 
 metric:

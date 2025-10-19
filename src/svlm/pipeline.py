@@ -35,8 +35,18 @@ class GenerationSample:
 
 
 def _temperature_scale(logits: torch.Tensor, temperature: float) -> torch.Tensor:
-    if temperature <= 0.0:
-        raise ValueError("Temperature must be positive.")
+    if temperature < 0.0:
+        raise ValueError("Temperature must be non-negative.")
+    if temperature == 0.0:
+        # Produce a deterministic one-hot style distribution by keeping only the argmax token.
+        scaled = torch.full_like(logits, float("-inf"))
+        if logits.ndim == 1:
+            max_idx = torch.argmax(logits)
+            scaled[max_idx] = 0.0
+        else:
+            max_idx = torch.argmax(logits, dim=-1, keepdim=True)
+            scaled.scatter_(-1, max_idx, 0.0)
+        return scaled
     return logits / temperature
 
 
@@ -195,6 +205,34 @@ class InferencePipeline:
 
         metadata["generated_tokens"] = generated_tokens
         metadata["output_text"] = output_text
+
+        if self.calibrator is not None:
+            signal_summary = self.calibrator.get_last_signal_summary()
+            if signal_summary:
+                metadata["calibration_signals"] = signal_summary
+
+                def _format_stats(stats: Optional[Dict[str, float]]) -> str:
+                    if not stats:
+                        return "N/A"
+                    return (
+                        f"mean={stats['mean']:.4f}, "
+                        f"min={stats['min']:.4f}, "
+                        f"max={stats['max']:.4f}"
+                    )
+
+                sample_id = None
+                if sample.metadata:
+                    sample_id = sample.metadata.get("dataset_index")
+                prompt_preview = sample.prompt[:40].replace("\n", " ")
+                logger.info(
+                    "[Calibrator] Sample %s | Prompt='%s...' | ERW[%s] PVA[%s] VEN[%s] Combined[%s]",
+                    sample_id if sample_id is not None else "?",
+                    prompt_preview,
+                    _format_stats(signal_summary.get("erw")),
+                    _format_stats(signal_summary.get("pva")),
+                    _format_stats(signal_summary.get("ven")),
+                    _format_stats(signal_summary.get("combined")),
+                )
 
         return GenerationResult(
             prompt=sample.prompt,
