@@ -172,6 +172,8 @@ class InferencePipeline:
                     token_ids=state.input_ids[0] if state.input_ids.dim() > 1 else state.input_ids,
                 )
 
+            logits = self._mask_reserved_tokens(logits)
+
             token = sample_token(logits, self.config.decoding)
             generated_tokens.append(token)
 
@@ -224,10 +226,12 @@ class InferencePipeline:
                 if sample.metadata:
                     sample_id = sample.metadata.get("dataset_index")
                 prompt_preview = sample.prompt[:40].replace("\n", " ")
+                logit_norm = torch.linalg.vector_norm(last_logits).item() if last_logits is not None else float("nan")
                 logger.info(
-                    "[Calibrator] Sample %s | Prompt='%s...' | ERW[%s] PVA[%s] VEN[%s] Combined[%s]",
+                    "[Calibrator] Sample %s | Prompt='%s...' | LogitNorm=%.4f | ERW[%s] PVA[%s] VEN[%s] Combined[%s]",
                     sample_id if sample_id is not None else "?",
                     prompt_preview,
+                    logit_norm,
                     _format_stats(signal_summary.get("erw")),
                     _format_stats(signal_summary.get("pva")),
                     _format_stats(signal_summary.get("ven")),
@@ -241,6 +245,22 @@ class InferencePipeline:
             tokens=generated_tokens,
             metadata=metadata,
         )
+
+    def _mask_reserved_tokens(self, logits: torch.Tensor) -> torch.Tensor:
+        reserved_ids: Optional[List[int]] = None
+        if hasattr(self.adapter, "reserved_token_ids"):
+            try:
+                reserved_ids = self.adapter.reserved_token_ids()  # type: ignore[attr-defined]
+            except Exception:
+                reserved_ids = None
+        if not reserved_ids:
+            return logits
+        masked = logits.clone()
+        vocab_size = masked.shape[-1]
+        for token_id in reserved_ids:
+            if 0 <= token_id < vocab_size:
+                masked[..., token_id] = float("-inf")
+        return masked
 
 
 def save_metadata(

@@ -67,6 +67,9 @@ class VisionLanguageAdapter(Protocol):
     def get_token_id(self, text: str) -> Optional[int]:
         ...
 
+    def reserved_token_ids(self) -> Optional[List[int]]:
+        ...
+
 
 class DummyAdapter(VisionLanguageAdapter):
     """
@@ -127,6 +130,9 @@ class DummyAdapter(VisionLanguageAdapter):
 
     def get_token_id(self, text: str) -> Optional[int]:
         return None
+
+    def reserved_token_ids(self) -> Optional[List[int]]:
+        return []
 
 
 def _ensure_pil_image(image: Any) -> Optional["Image.Image"]:
@@ -239,6 +245,18 @@ class HuggingFaceVLAdapter(VisionLanguageAdapter):
 
         self._vision_config = getattr(self.model.config, "vision_config", None)
         self._text_config = getattr(self.model.config, "text_config", self.model.config)
+        self._reserved_token_ids: List[int] = []
+        for attr in ("vision_start_token_id", "vision_end_token_id", "image_token_id", "video_token_id"):
+            value = getattr(self.model.config, attr, None)
+            if value is None:
+                continue
+            if isinstance(value, (list, tuple, set)):
+                self._reserved_token_ids.extend(int(v) for v in value if isinstance(v, int))
+            elif isinstance(value, int):
+                self._reserved_token_ids.append(value)
+        # ensure unique
+        if self._reserved_token_ids:
+            self._reserved_token_ids = sorted(set(self._reserved_token_ids))
 
     def prepare_inputs(self, sample: Dict[str, Any]) -> AdapterState:
         prompt = sample.get("prompt", "")
@@ -385,38 +403,73 @@ class HuggingFaceVLAdapter(VisionLanguageAdapter):
                 return tokens[0]
         return None
 
+    def reserved_token_ids(self) -> Optional[List[int]]:
+        return list(self._reserved_token_ids) if self._reserved_token_ids else []
+
     def _build_attention(self, outputs, state: AdapterState) -> AttentionProjections:
         cross_attn = getattr(outputs, "cross_attentions", None)
         self_attn = getattr(outputs, "attentions", None)
 
+        last_self = None
+        if self_attn:
+            last_self = self_attn[-1][0]  # (num_heads, seq_len, seq_len)
+
+        visual_mask = self._extract_visual_token_mask(state) if state is not None else None
+        text_indices = None
+        visual_indices = None
+        if visual_mask is not None and visual_mask.numel() > 0 and visual_mask.any():
+            text_indices = torch.nonzero(~visual_mask, as_tuple=False).squeeze(-1)
+            visual_indices = torch.nonzero(visual_mask, as_tuple=False).squeeze(-1)
+            if text_indices.ndim == 0:
+                text_indices = text_indices.unsqueeze(0)
+            if visual_indices.ndim == 0:
+                visual_indices = visual_indices.unsqueeze(0)
+            if text_indices.numel() == 0 or visual_indices.numel() == 0:
+                text_indices = visual_indices = None
+        else:
+            visual_mask = None
+
         cross_tensor = None
         if cross_attn:
             last_cross = cross_attn[-1][0]  # (num_heads, query_len, kv_len)
-            cross_tensor = last_cross.permute(0, 2, 1).contiguous()
+            can_use_cross = True
+            if text_indices is not None:
+                if last_cross.shape[1] >= text_indices.max().item() + 1:
+                    last_cross = last_cross[:, text_indices, :]
+                else:
+                    can_use_cross = False
+            if can_use_cross and visual_indices is not None:
+                if last_cross.shape[2] >= visual_indices.max().item() + 1:
+                    last_cross = last_cross[:, :, visual_indices]
+                else:
+                    can_use_cross = False
+            if can_use_cross:
+                cross_tensor = last_cross.permute(0, 2, 1).contiguous()
 
-        self_tensor = None
-        if self_attn:
-            last_self = self_attn[-1][0]  # (num_heads, query_len, seq_len)
-            self_tensor = last_self
+        if cross_tensor is None and last_self is not None and text_indices is not None and visual_indices is not None:
+            if (
+                last_self.shape[1] >= text_indices.max().item() + 1
+                and last_self.shape[2] >= visual_indices.max().item() + 1
+            ):
+                derived = last_self[:, text_indices, :][:, :, visual_indices]
+                cross_tensor = derived.permute(0, 2, 1).contiguous()
 
-        if cross_tensor is None and self_tensor is not None and state is not None:
-            visual_mask = self._extract_visual_token_mask(state)
-            if visual_mask is not None and visual_mask.any():
-                visual_indices = torch.nonzero(visual_mask, as_tuple=False).squeeze(-1)
-                text_indices = torch.nonzero(~visual_mask, as_tuple=False).squeeze(-1)
-                if visual_indices.numel() > 0 and text_indices.numel() > 0:
-                    cross_tensor = (
-                        self_tensor[:, text_indices, :][:, :, visual_indices]
-                        .contiguous()
-                        .permute(0, 2, 1)
-                        .contiguous()
-                    )
+        self_tensor = last_self
+        if self_tensor is not None and text_indices is not None:
+            if self_tensor.shape[1] >= text_indices.max().item() + 1 and self_tensor.shape[2] >= text_indices.max().item() + 1:
+                self_tensor = self_tensor[:, text_indices, :][:, :, text_indices]
 
         if cross_tensor is None:
-            cross_tensor = torch.zeros(
-                (self_tensor.shape[0], 1, self_tensor.shape[-1]) if self_tensor is not None else (1, 1, 1),
-                device=outputs.logits.device,
-            )
+            if self_tensor is not None:
+                cross_tensor = torch.zeros(
+                    (self_tensor.shape[0], 1, self_tensor.shape[1]),
+                    device=outputs.logits.device,
+                )
+            else:
+                cross_tensor = torch.zeros(
+                    (1, 1, 1),
+                    device=outputs.logits.device,
+                )
         if self_tensor is None:
             self_tensor = torch.zeros(
                 (cross_tensor.shape[0], cross_tensor.shape[-1], cross_tensor.shape[-1]),
