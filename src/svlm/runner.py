@@ -78,22 +78,22 @@ def load_adapter(model_config: ModelConfig):
 
 def resolve_adapter_target(model_config: ModelConfig) -> str:
     target = model_config.adapter_target
-    if target is None or target == "auto":
-        lowered_name = model_config.name.lower()
-        for hint, path in MODEL_NAME_HINTS:
-            if hint in lowered_name:
-                log.info("Resolved adapter '%s' from model name hint '%s'", path, hint)
-                return path
-        log.info("Falling back to default adapter %s", DEFAULT_ADAPTER_PATH)
-        return DEFAULT_ADAPTER_PATH
 
-    cleaned = target.lower()
-    if cleaned in ADAPTER_ALIASES:
-        resolved = ADAPTER_ALIASES[cleaned]
-        log.info("Resolved adapter alias '%s' → %s", target, resolved)
-        return resolved
+    if target and target != "auto":
+        if target.lower() in ADAPTER_ALIASES:
+            resolved = ADAPTER_ALIASES[target.lower()]
+            log.info("Resolved adapter alias '%s' → %s", target, resolved)
+            return resolved
+        return target
 
-    return target
+    lowered_name = model_config.name.lower()
+    for hint, path in MODEL_NAME_HINTS:
+        if hint in lowered_name:
+            log.info("Resolved adapter '%s' from model name hint '%s'", path, hint)
+            return path
+
+    log.info("Falling back to default adapter %s", DEFAULT_ADAPTER_PATH)
+    return DEFAULT_ADAPTER_PATH
 
 
 def import_class(path: str):

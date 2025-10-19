@@ -77,6 +77,7 @@ class LogitCalibrator:
             return None
 
         grounding = compute_visual_grounding(attn.cross_modal)
+
         pva_signal = None
         if self.use_pva:
             if self._pva_state is not None and self._pva_state.shape != grounding.shape:
@@ -91,21 +92,12 @@ class LogitCalibrator:
             language = compute_language_evidence(attn.self_attn)
             ven_signal = compute_visual_ratio(grounding, language, eps=self.ven_eps)
 
-        if self.use_erw and not self.use_pva and not self.use_ven:
-            return grounding
-        if self.use_pva and not self.use_ven and not self.use_erw:
-            return pva_signal
-        if self.use_ven and not self.use_pva and not self.use_erw:
-            return ven_signal
-        if self.use_pva and not self.use_ven and self.use_erw:
-            return pva_signal
-        if self.use_ven and not self.use_pva and self.use_erw:
-            return ven_signal
         if self.use_pva and self.use_ven:
-            if pva_signal is None or ven_signal is None:
-                raise RuntimeError("Unexpected missing signal for combination.")
             return self.alpha * pva_signal + (1.0 - self.alpha) * ven_signal
-        # If only ERW is disabled but others also disabled, fallback to grounding
+        if self.use_pva:
+            return pva_signal
+        if self.use_ven:
+            return ven_signal
         return grounding
 
     def _map_signal_to_vocab(

@@ -249,7 +249,7 @@ def collect_samples(data_config: DataConfig) -> List[GenerationSample]:
 
 def _load_hf_dataset_samples(data_config: DataConfig) -> List[GenerationSample]:
     try:
-        from datasets import load_dataset, get_dataset_split_names
+        from datasets import load_dataset
     except ImportError as exc:
         raise ImportError(
             "datasets library is required for HuggingFace datasets. "
@@ -257,83 +257,36 @@ def _load_hf_dataset_samples(data_config: DataConfig) -> List[GenerationSample]:
         ) from exc
 
     load_kwargs: Dict[str, Any] = {}
-    cache_dir = None
     if data_config.data_path is not None:
-        candidate = _resolve_path(None, data_config.data_path)
-        cache_dir = _prepare_cache_dir(candidate)
-        if cache_dir is None:
-            logger.warning(
-                "Cache directory '%s' is not writable; falling back to default HuggingFace cache.",
-                candidate,
-            )
-    if cache_dir is not None:
-        load_kwargs["cache_dir"] = cache_dir
-    if data_config.hf_revision is not None:
-        load_kwargs["revision"] = data_config.hf_revision
-
-    target_split = data_config.split
-    try:
-        available_splits = get_dataset_split_names(
-            path=data_config.hf_repo,
-            config_name=data_config.hf_subset,
-        )
-        if target_split not in available_splits:
-            fallback_split = available_splits[0]
-            logger.warning(
-                "Split '%s' not found for dataset %s/%s. Using '%s' instead.",
-                target_split,
-                data_config.hf_repo,
-                data_config.hf_subset,
-                fallback_split,
-            )
-            target_split = fallback_split
-    except Exception as exc:  # pragma: no cover
-        logger.debug("Unable to query dataset splits: %s", exc)
+        cache_dir = _prepare_cache_dir(data_config.data_path)
+        if cache_dir:
+            load_kwargs["cache_dir"] = cache_dir
 
     dataset = load_dataset(
         path=data_config.hf_repo,
         name=data_config.hf_subset,
-        split=target_split,
+        split=data_config.split,
         **load_kwargs,
     )
-
-    categories = _normalize_categories(data_config)
-    if categories:
-        if "category" not in dataset.column_names:
-            logger.warning(
-                "Category filter provided but dataset lacks 'category' column; skipping filter."
-            )
-        else:
-            dataset = dataset.filter(lambda example: example.get("category", "").lower() in categories)
 
     if data_config.shuffle:
         dataset = dataset.shuffle(seed=data_config.seed)
     if data_config.limit is not None:
-        limit = min(data_config.limit, len(dataset))
-        dataset = dataset.select(range(limit))
+        dataset = dataset.select(range(min(data_config.limit, len(dataset))))
 
     samples: List[GenerationSample] = []
-    image_root = _resolve_path(data_config.data_path, data_config.image_root)
-
     for idx, record in enumerate(dataset):
         prompt = record.get(data_config.text_column, "")
-        reference = None
-        if data_config.reference_column:
-            reference = record.get(data_config.reference_column)
-
+        reference = record.get(data_config.reference_column) if data_config.reference_column else None
         image = record.get(data_config.image_column)
 
         metadata = {
             "dataset_index": idx,
             "hf_repo": data_config.hf_repo,
-            "hf_subset": data_config.hf_subset,
+            "split": data_config.split,
         }
-        if data_config.data_path is not None:
-            metadata["cache_dir"] = data_config.data_path
-        if image_root is not None:
-            filename = record.get("file_name") or record.get("filename")
-            if filename:
-                metadata["image_path"] = os.path.join(image_root, filename)
+        if data_config.hf_subset:
+            metadata["hf_subset"] = data_config.hf_subset
 
         samples.append(
             GenerationSample(
@@ -349,67 +302,56 @@ def _load_hf_dataset_samples(data_config: DataConfig) -> List[GenerationSample]:
 
 def _load_coco_samples(data_config: DataConfig) -> List[GenerationSample]:
     if data_config.data_path is None:
-        raise ValueError("COCO-style datasets require data_path pointing to the dataset root.")
+        raise ValueError("COCO datasets require data_path.")
 
     split = data_config.split.lower()
-    if split in {"validation", "val", "val2017"}:
-        ann_filename = "captions_val2017.json"
-        default_image_dir = "val2017"
-    elif split in {"train", "train2017"}:
-        ann_filename = "captions_train2017.json"
-        default_image_dir = "train2017"
-    else:
-        raise ValueError(f"Unsupported COCO split '{data_config.split}'.")
+    ann_filename = f"captions_{split}2017.json" if split in {"val", "train"} else f"captions_{split}.json"
+    image_dir = f"{split}2017" if split in {"val", "train"} else split
 
-    annotation_path = _resolve_path(data_config.data_path, data_config.annotation_path) or os.path.join(
-        data_config.data_path, "annotations", ann_filename
-    )
-    image_root = _resolve_path(data_config.data_path, data_config.image_root) or os.path.join(
-        data_config.data_path, default_image_dir
-    )
+    annotation_path = data_config.annotation_path or f"annotations/{ann_filename}"
+    image_root = data_config.image_root or image_dir
+
+    annotation_path = _resolve_path(data_config.data_path, annotation_path)
+    image_root = _resolve_path(data_config.data_path, image_root)
 
     if not os.path.exists(annotation_path):
-        raise FileNotFoundError(f"COCO annotation file not found: {annotation_path}")
+        raise FileNotFoundError(f"Annotation file not found: {annotation_path}")
     if not os.path.isdir(image_root):
-        raise FileNotFoundError(f"COCO image directory not found: {image_root}")
+        raise FileNotFoundError(f"Image directory not found: {image_root}")
 
     with open(annotation_path, "r", encoding="utf-8") as fp:
-        annotations = json.load(fp)
+        data = json.load(fp)
 
-    image_map = {img["id"]: img for img in annotations.get("images", [])}
-    ann_list = annotations.get("annotations", [])
+    image_map = {img["id"]: img for img in data.get("images", [])}
+    ann_list = data.get("annotations", [])
 
     if data_config.shuffle:
-        rng = random.Random(data_config.seed)
-        rng.shuffle(ann_list)
+        random.Random(data_config.seed).shuffle(ann_list)
     if data_config.limit is not None:
-        ann_list = ann_list[: data_config.limit]
+        ann_list = ann_list[:data_config.limit]
 
     samples: List[GenerationSample] = []
     for idx, ann in enumerate(ann_list):
         image_info = image_map.get(ann["image_id"])
-        if image_info is None:
+        if not image_info:
             continue
-        file_name = image_info["file_name"]
-        image_path = os.path.join(image_root, file_name)
-        prompt = ann.get(data_config.text_column, ann.get("caption", ""))
-        reference = None
-        if data_config.reference_column:
-            reference = ann.get(data_config.reference_column)
 
-        metadata = {
-            "dataset_index": idx,
-            "image_id": ann.get("image_id"),
-            "annotation_id": ann.get("id"),
-            "image_path": image_path,
-        }
+        image_path = os.path.join(image_root, image_info["file_name"])
+        prompt = ann.get(data_config.text_column, ann.get("caption", ""))
+        reference = ann.get(data_config.reference_column) if data_config.reference_column else None
+
         samples.append(
             GenerationSample(
                 prompt=str(prompt),
                 image=image_path,
-                reference=str(reference) if reference is not None else None,
-                metadata=metadata,
-                choices=["Yes", "No"] if data_config.name.lower() == "pope" else None,
+                reference=str(reference) if reference else None,
+                metadata={
+                    "dataset_index": idx,
+                    "image_id": ann.get("image_id"),
+                    "annotation_id": ann.get("id"),
+                    "image_path": image_path,
+                },
+                choices=None,
             )
         )
     return samples
@@ -426,17 +368,13 @@ def _resolve_path(base: Optional[str], path: Optional[str]) -> Optional[str]:
 
 
 def _maybe_load_baseline_metrics(run_config: RunConfig) -> Optional[Dict[str, float]]:
-    candidate_path = None
-    if run_config.resume_from is not None:
-        candidate_path = run_config.resume_from
-    else:
-        parent_dir = os.path.dirname(run_config.output_dir)
-        candidate_path = os.path.join(parent_dir, "baseline", run_config.metadata_filename)
+    candidate_path = run_config.resume_from or os.path.join(
+        os.path.dirname(run_config.output_dir), "baseline", run_config.metadata_filename
+    )
     if candidate_path and os.path.exists(candidate_path):
         try:
             with open(candidate_path, "r", encoding="utf-8") as fp:
-                data = json.load(fp)
-            return data.get("metrics")
+                return json.load(fp).get("metrics")
         except (OSError, json.JSONDecodeError):
             return None
     return None
@@ -453,22 +391,6 @@ def _prepare_cache_dir(path: Optional[str]) -> Optional[str]:
     except OSError as exc:
         logger.debug("Cache directory '%s' is not writable: %s", path, exc)
         return None
-
-
-def _normalize_categories(data_config: DataConfig) -> Optional[set[str]]:
-    categories = data_config.hf_categories
-    if categories is None:
-        return None
-    if isinstance(categories, str):
-        iterable = [categories]
-    else:
-        iterable = categories
-    normalized: set[str] = set()
-    for category in iterable:
-        if not category:
-            continue
-        normalized.add(str(category).strip().lower())
-    return normalized or None
 
 
 def _enforce_choices(

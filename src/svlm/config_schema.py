@@ -20,21 +20,18 @@ class ModelConfig:
 @dataclass
 class DataConfig:
     name: str = "POPE"
-    subset: Optional[str] = None
-    split: str = "test"
+    split: str = "adversarial"
     image_column: str = "image"
     text_column: str = "question"
     reference_column: Optional[str] = "answer"
     limit: Optional[int] = None
     shuffle: bool = False
     seed: int = 42
+    hf_repo: Optional[str] = None
+    hf_subset: Optional[str] = None
     data_path: Optional[str] = None
     image_root: Optional[str] = None
     annotation_path: Optional[str] = None
-    hf_repo: Optional[str] = None
-    hf_subset: Optional[str] = None
-    hf_revision: Optional[str] = None
-    hf_categories: Optional[List[str]] = None
 
 
 @dataclass
@@ -54,7 +51,6 @@ class DecodingConfig:
     temperature: float = 0.2
     top_p: float = 0.9
     top_k: Optional[int] = None
-    repetition_penalty: float = 1.0
     stop_words: List[str] = field(default_factory=list)
 
 

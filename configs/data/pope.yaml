@@ -1,16 +1,9 @@
 name: POPE
-subset: adversarial #popular
-split: test
+split: adversarial
 image_column: image
 text_column: question
 reference_column: answer
-limit: 100 #null
+limit: null
 shuffle: false
 seed: 42
-data_path: /data/coco
-image_root: val2017
-annotation_path: annotations/captions_val2017.json
 hf_repo: lmms-lab/POPE
-hf_subset: default
-hf_revision: adversarial
-hf_categories: adversarial
