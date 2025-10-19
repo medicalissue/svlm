@@ -1,0 +1,97 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Optional
+
+import torch
+
+from .attention import (
+    AttentionProjections,
+    compute_language_evidence,
+    compute_visual_grounding,
+    compute_visual_persistence,
+    compute_visual_ratio,
+    normalize_signal,
+)
+
+
+@dataclass
+class LogitCalibrator:
+    """
+    Applies post-hoc logit calibration using ERW, PVA, VEN signals.
+    """
+
+    use_erw: bool = True
+    use_pva: bool = False
+    use_ven: bool = False
+    lambda_: float = 0.3
+    beta: float = 0.9
+    alpha: float = 0.6
+    ven_eps: float = 1e-5
+
+    def __post_init__(self) -> None:
+        if not (0.0 <= self.beta < 1.0):
+            raise ValueError("beta must be in [0, 1)")
+        if not 0.0 <= self.alpha <= 1.0:
+            raise ValueError("alpha must be in [0, 1]")
+        if self.lambda_ < 0.0:
+            raise ValueError("lambda must be non-negative.")
+        self._pva_state: Optional[torch.Tensor] = None
+
+    def reset(self) -> None:
+        self._pva_state = None
+
+    def _prepare(self, attn: AttentionProjections) -> AttentionProjections:
+        attn.validate()
+        return attn
+
+    def adjust_logits(
+        self,
+        logits: torch.Tensor,
+        attn: AttentionProjections,
+    ) -> torch.Tensor:
+        """
+        Args:
+            logits: Tensor [N_t] of pre-softmax logits for current step.
+            attn: Attention projections for current step.
+        """
+        attn = self._prepare(attn)
+        signal = self._compute_signal(attn)
+        if signal is None:
+            return logits
+        centered_signal, _ = normalize_signal(signal)
+        return logits + self.lambda_ * centered_signal
+
+    def _compute_signal(self, attn: AttentionProjections) -> Optional[torch.Tensor]:
+        if not (self.use_erw or self.use_pva or self.use_ven):
+            return None
+
+        grounding = compute_visual_grounding(attn.cross_modal)
+        pva_signal = None
+        if self.use_pva:
+            self._pva_state = compute_visual_persistence(grounding, self._pva_state, beta=self.beta)
+            pva_signal = self._pva_state
+
+        ven_signal = None
+        if self.use_ven:
+            if attn.self_attn is None:
+                raise ValueError("VEN requires self-attention projections.")
+            language = compute_language_evidence(attn.self_attn)
+            ven_signal = compute_visual_ratio(grounding, language, eps=self.ven_eps)
+
+        if self.use_erw and not self.use_pva and not self.use_ven:
+            return grounding
+        if self.use_pva and not self.use_ven and not self.use_erw:
+            return pva_signal
+        if self.use_ven and not self.use_pva and not self.use_erw:
+            return ven_signal
+        if self.use_pva and not self.use_ven and self.use_erw:
+            return pva_signal
+        if self.use_ven and not self.use_pva and self.use_erw:
+            return ven_signal
+        if self.use_pva and self.use_ven:
+            if pva_signal is None or ven_signal is None:
+                raise RuntimeError("Unexpected missing signal for combination.")
+            return self.alpha * pva_signal + (1.0 - self.alpha) * ven_signal
+        # If only ERW is disabled but others also disabled, fallback to grounding
+        return grounding

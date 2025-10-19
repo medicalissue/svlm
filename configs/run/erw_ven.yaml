@@ -1,0 +1,6 @@
+run_name: erw_ven
+output_dir: outputs/erw_ven
+metadata_filename: metadata.json
+save_generations: true
+resume_from: null
+seed: 42

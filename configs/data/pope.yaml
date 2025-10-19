@@ -1,0 +1,10 @@
+name: POPE
+subset: null
+split: validation
+image_column: image
+text_column: question
+reference_column: answer
+limit: 16
+shuffle: false
+seed: 42
+data_path: null

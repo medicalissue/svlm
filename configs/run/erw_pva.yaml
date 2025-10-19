@@ -1,0 +1,6 @@
+run_name: erw_pva
+output_dir: outputs/erw_pva
+metadata_filename: metadata.json
+save_generations: true
+resume_from: null
+seed: 42

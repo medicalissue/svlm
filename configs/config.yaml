@@ -1,0 +1,8 @@
+defaults:
+  - model: qwen2_vl_2b
+  - data: pope
+  - method: baseline
+  - decoding: default
+  - run: baseline
+  - evaluation: default
+  - _self_

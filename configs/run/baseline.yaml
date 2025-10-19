@@ -1,0 +1,6 @@
+run_name: baseline
+output_dir: outputs/baseline
+metadata_filename: metadata.json
+save_generations: true
+resume_from: null
+seed: 42

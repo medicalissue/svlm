@@ -1,0 +1,12 @@
+name: Qwen/Qwen2-VL-2B-Instruct
+revision: null
+dtype: bfloat16
+device: cuda
+attn_implementation: null
+max_sequence_length: 4096
+adapter_target: auto
+adapter_kwargs:
+  vocab_size: 65024
+  num_heads: 8
+  num_visual_tokens: 64
+gpu_id: null

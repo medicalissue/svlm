@@ -1,0 +1,10 @@
+name: RefCOCO+
+subset: unc
+split: validation
+image_column: image
+text_column: expression
+reference_column: target
+limit: 40
+shuffle: false
+seed: 7
+data_path: null

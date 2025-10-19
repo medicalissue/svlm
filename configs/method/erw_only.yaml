@@ -1,0 +1,7 @@
+use_erw: true
+use_pva: false
+use_ven: false
+lambda_: 0.3
+beta: 0.9
+alpha: 0.6
+ven_eps: 1.0e-05
