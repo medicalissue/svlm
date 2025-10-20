@@ -44,6 +44,36 @@ class MethodConfig:
     beta: float = 0.9
     alpha: float = 0.6
     ven_eps: float = 1e-5
+    dynamic_lambda: bool = False
+    candidate_blending: bool = False
+    candidate_topk: int = 64
+    candidate_mix_cap: float = 0.95
+    residual_scale: float = 0.5
+
+    # Extreme logit manipulation modes
+    use_contrastive: bool = False
+    use_adversarial: bool = False
+    use_adaptive_temp: bool = False
+
+    # Contrastive sharpening parameters
+    contrastive_strength: float = 10.0
+    contrastive_threshold: float = 0.5
+
+    # Adversarial perturbation parameters
+    adversarial_strength: float = 0.3
+    adversarial_iterations: int = 3
+    adversarial_step_size: float = 0.1
+
+    # Adaptive temperature parameters
+    temp_base: float = 1.0
+    temp_range: float = 5.0
+    temp_visual_boost: bool = True
+
+  # Automatic scaling parameters
+    auto_scale_lambda: bool = False
+    target_logit_impact: float = 0.1  # Target 10% impact on logits
+    max_lambda: float = 1000.0
+    min_lambda: float = 0.1
 
 
 @dataclass

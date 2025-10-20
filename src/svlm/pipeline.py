@@ -105,6 +105,28 @@ def build_calibrator(config: MethodConfig) -> Optional[LogitCalibrator]:
         beta=config.beta,
         alpha=config.alpha,
         ven_eps=config.ven_eps,
+        dynamic_lambda=config.dynamic_lambda,
+        candidate_blending=config.candidate_blending,
+        candidate_topk=config.candidate_topk,
+        candidate_mix_cap=config.candidate_mix_cap,
+        residual_scale=config.residual_scale,
+        # Extreme logit manipulation
+        use_contrastive=config.use_contrastive,
+        use_adversarial=config.use_adversarial,
+        use_adaptive_temp=config.use_adaptive_temp,
+        contrastive_strength=config.contrastive_strength,
+        contrastive_threshold=config.contrastive_threshold,
+        adversarial_strength=config.adversarial_strength,
+        adversarial_iterations=config.adversarial_iterations,
+        adversarial_step_size=config.adversarial_step_size,
+        temp_base=config.temp_base,
+        temp_range=config.temp_range,
+        temp_visual_boost=config.temp_visual_boost,
+        # Automatic scaling parameters
+        auto_scale_lambda=config.auto_scale_lambda,
+        target_logit_impact=config.target_logit_impact,
+        max_lambda=config.max_lambda,
+        min_lambda=config.min_lambda,
     )
 
 
@@ -136,12 +158,17 @@ class InferencePipeline:
                 "erw": self.config.method.use_erw,
                 "pva": self.config.method.use_pva,
                 "ven": self.config.method.use_ven,
-                "lambda": self.config.method.lambda_,
-                "beta": self.config.method.beta,
-                "alpha": self.config.method.alpha,
-                "ven_eps": self.config.method.ven_eps,
-            },
-        }
+            "lambda": self.config.method.lambda_,
+            "beta": self.config.method.beta,
+            "alpha": self.config.method.alpha,
+            "ven_eps": self.config.method.ven_eps,
+            "dynamic_lambda": self.config.method.dynamic_lambda,
+            "candidate_blending": self.config.method.candidate_blending,
+            "candidate_topk": self.config.method.candidate_topk,
+            "candidate_mix_cap": self.config.method.candidate_mix_cap,
+            "residual_scale": self.config.method.residual_scale,
+        },
+    }
         if sample.metadata:
             metadata["sample"] = sample.metadata
 
@@ -227,11 +254,24 @@ class InferencePipeline:
                     sample_id = sample.metadata.get("dataset_index")
                 prompt_preview = sample.prompt[:40].replace("\n", " ")
                 logit_norm = torch.linalg.vector_norm(last_logits).item() if last_logits is not None else float("nan")
+                # Get auto lambda info if available
+                auto_lambda_info = ""
+                if self.calibrator and self.calibrator.auto_scale_lambda:
+                    auto_lambda = signal_summary.get("auto_lambda")
+                    clipped = signal_summary.get("clipped")
+                    dynamic_max = signal_summary.get("dynamic_max")
+
+                    if auto_lambda:
+                        clip_indicator = "🔴" if clipped and clipped['mean'] > 0.5 else "🟢"
+                        max_info = f"/{dynamic_max['mean']:.1f}" if dynamic_max else ""
+                        auto_lambda_info = f" | AutoLambda={auto_lambda['mean']:.2f}{max_info}{clip_indicator}"
+
                 logger.info(
-                    "[Calibrator] Sample %s | Prompt='%s...' | LogitNorm=%.4f | ERW[%s] PVA[%s] VEN[%s] Combined[%s]",
+                    "[Calibrator] Sample %s | Prompt='%s...' | LogitNorm=%.4f%s | ERW[%s] PVA[%s] VEN[%s] Combined[%s]",
                     sample_id if sample_id is not None else "?",
                     prompt_preview,
                     logit_norm,
+                    auto_lambda_info,
                     _format_stats(signal_summary.get("erw")),
                     _format_stats(signal_summary.get("pva")),
                     _format_stats(signal_summary.get("ven")),

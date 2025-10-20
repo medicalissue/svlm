@@ -18,6 +18,32 @@ parameters:
   method.alpha:
     values: [0.4, 0.6, 0.8]
 
+  # Extreme manipulation modes
+  method.use_contrastive:
+    values: [false, true]
+
+  method.use_adversarial:
+    values: [false, true]
+
+  method.use_adaptive_temp:
+    values: [false, true]
+
+  # Extreme parameters (fewer values for grid search)
+  method.contrastive_strength:
+    values: [5.0, 10.0, 15.0]
+
+  method.adversarial_strength:
+    values: [0.3, 0.5]
+
+  method.adversarial_iterations:
+    values: [2, 3]
+
+  method.temp_range:
+    values: [3.0, 5.0, 8.0]
+
+  method.temp_visual_boost:
+    values: [true, false]
+
   # Fixed parameters
   data:
     value: pope_adversarial
