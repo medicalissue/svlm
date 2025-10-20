@@ -11,12 +11,12 @@ parameters:
   # Random search - good for quick exploration
   method.lambda_:
     distribution: uniform
-    min: 0.2
-    max: 1.0
+    min: 0.1
+    max: 10.0
 
   method.beta:
     distribution: uniform
-    min: 0.6
+    min: 0.7
     max: 0.95
 
   method.alpha:
@@ -24,37 +24,24 @@ parameters:
     min: 0.3
     max: 0.8
 
-  # Extreme manipulation modes (random sampling)
-  method.use_contrastive:
+  # Auto scaling parameters
+  method.auto_scale_lambda:
     values: [true, false]
 
-  method.use_adversarial:
-    values: [true, false]
-
-  method.use_adaptive_temp:
-    values: [true, false]
-
-  # Extreme parameters
-  method.contrastive_strength:
+  method.target_logit_impact:
     distribution: uniform
-    min: 1.0
-    max: 25.0
+    min: 0.01
+    max: 0.15
 
-  method.adversarial_strength:
+  method.max_lambda:
     distribution: uniform
-    min: 0.05
-    max: 1.5
+    min: 50.0
+    max: 1000.0
 
-  method.adversarial_iterations:
-    values: [1, 2, 3, 4, 5, 6]
-
-  method.temp_range:
-    distribution: uniform
-    min: 0.5
-    max: 12.0
-
-  method.temp_visual_boost:
-    values: [true, false]
+  method.min_lambda:
+    distribution: log_uniform_values
+    min: 0.001
+    max: 0.1
 
   # Fixed parameters
   data:

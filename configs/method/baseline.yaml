@@ -1,37 +1,11 @@
 use_erw: true
 use_pva: true
 use_ven: true
-lambda_: 1.0                    # Base lambda (auto_scale will adjust this)
-auto_scale_lambda: true          # Enable automatic scaling based on logit norm
-target_logit_impact: 0.05        # Target 5% impact on logits (more realistic)
-max_lambda: 200.0               # Maximum allowed lambda (reasonable bound)
-min_lambda: 0.01                # Minimum allowed lambda
+lambda_: 1.0
+auto_scale_lambda: true
+target_logit_impact: 0.05
+max_lambda: 200.0
+min_lambda: 0.01
 beta: 0.9
 alpha: 0.6
 ven_eps: 1.0e-05
-
-# Optional calibration controls:
-dynamic_lambda: true              # enable signal-strength-aware scaling of lambda_
-candidate_blending: true          # blend top-K token probabilities using calibration signal
-candidate_topk: 32            # number of tokens to blend when candidate_blending is enabled
-# candidate_mix_cap: 0.95       # upper bound on mixing weight for blended probabilities
-# residual_scale: 0.5           # scale for remaining tokens outside top-K
-
-# Extreme logit manipulation modes (기본값: 비활성화)
-use_contrastive: true           # Contrastive Logit Sharpening: 시각 토큰 강화/환각 토큰 억제
-use_adversarial: false          # Adversarial Perturbation: 반복적 교란 및 재조정
-use_adaptive_temp: false        # Adaptive Temperature: 토큰별 temperature 조절
-
-# Contrastive sharpening parameters
-contrastive_strength: 100.0     # 대비 강도 (100.0 = 극도로 강력)
-contrastive_threshold: 0.5      # Signal threshold (0.5 = median)
-
-# Adversarial perturbation parameters
-adversarial_strength: 0.3       # 교란 강도
-adversarial_iterations: 3       # 반복 횟수
-adversarial_step_size: 0.1      # 스텝 크기 (현재 미사용)
-
-# Adaptive temperature parameters
-temp_base: 1.0                  # 기본 temperature
-temp_range: 5.0                 # Temperature 범위
-temp_visual_boost: true         # true: 높은 signal = 낮은 temp (sharper)

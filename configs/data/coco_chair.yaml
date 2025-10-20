@@ -7,4 +7,4 @@ limit: null
 shuffle: false
 seed: 42
 hf_repo: lmms-lab/COCO-Caption
-hf_subset: 2017
+hf_subset: 2014

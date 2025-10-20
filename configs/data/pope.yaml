@@ -9,4 +9,4 @@ seed: 42
 hf_repo: lmms-lab/POPE
 hf_subset: default
 data_path: /data/coco
-image_root: val2017
+image_root: val2014

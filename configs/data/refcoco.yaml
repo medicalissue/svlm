@@ -9,4 +9,4 @@ seed: 42
 hf_repo: lmms-lab/RefCOCO
 hf_subset: refcoco-unc
 data_path: /data/coco
-image_root: train2017
+image_root: train2014
